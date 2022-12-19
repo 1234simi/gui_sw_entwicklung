@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QMainWindow, QApplication, QDialog
 
 from Mandelbrot.run_video import main
-
+# check github
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
