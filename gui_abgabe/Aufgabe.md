@@ -45,3 +45,7 @@ Features (nach Schwierigkeit geordnet)
     - Diese Abgabe zählt 50% zur Note, die erste Abgabe zum Unittesting ebenfalls 50%
     
 
+
+### Get the mouse klick
+
+> https://stackoverflow.com/questions/64564469/how-to-get-mouse-cursor-coordinates-on-a-pyqtgraph-widget
