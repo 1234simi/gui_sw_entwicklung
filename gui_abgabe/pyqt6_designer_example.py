@@ -53,28 +53,21 @@ class MainWindow(QMainWindow):
         self.graphicsView.setToolTip('Bild des Mandelbrot')
         self.progressBar.setToolTip('Fortschritt der Berechnung')
 
-    def mouseMoveEvent(self, event):
-        mouseEvent = event[0]
-        mousePoint = mouseEvent.pos()
-
-        if p.p1.sceneBoundingRect().contains(mousePoint):
-            print('x=', mousePoint.x(), ' y=', mousePoint.y())
-
-        global Mouse_X
-        global Mouse_Y
-        try:
-            Mouse_X = event.x()
-            Mouse_Y = event.y()
-            print("mouse X,Y: {},{}".format(Mouse_X, Mouse_Y))
-        except:
-            pass
+    def mouseDoubleClickEvent(self, event):
+        Mouse_X = event.x()
+        Mouse_Y = event.y()
+        print(f'coor: {Mouse_X}, {Mouse_Y}')
 
     # def mouseMoveEvent(self, event):
-    #     s = event.windowPos()
-    #     self.setMouseTracking(True)
-    #     self.label_mouse_x.setText('X:' + str(s.x()))
-    #     self.label_mouse_y.setText('Y:' + str(s.y()))
-    #     # print("mouse X,Y: {},{}".format(Mouse_X, Mouse_Y))
+    #     pass
+        # global Mouse_X
+        # global Mouse_Y
+        # try:
+        #     Mouse_X = event.x()
+        #     Mouse_Y = event.y()
+        #     print("mouse X,Y: {},{}".format(Mouse_X, Mouse_Y))
+        # except:
+        #     pass
 
     def handleButtonClick(self):
         self.dialogWindow.show()

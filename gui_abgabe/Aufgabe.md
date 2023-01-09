@@ -49,3 +49,9 @@ Features (nach Schwierigkeit geordnet)
 ### Get the mouse klick
 
 > https://stackoverflow.com/questions/64564469/how-to-get-mouse-cursor-coordinates-on-a-pyqtgraph-widget
+
+
+### Basics
+> https://www.pythonguis.com/tutorials/pyqt-signals-slots-events/
+
+Clicked oder released
