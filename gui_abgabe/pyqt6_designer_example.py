@@ -11,20 +11,19 @@ from Mandelbrot.run_video import main
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        x_pos = 0
-        y_pos = 0
         # Mit progress-bar
         uic.loadUi("gui_data_progress_bar.ui", self)
         self.setMouseTracking(True)
         # Ohne progress-bar
         # uic.loadUi("gui_data.ui", self)
 
+        self.resetValue = False
+
         # Widgets from MainWIndow
         # Wenn der 'pushButton' geklickt wird
         self.pushButton.clicked.connect(self.handleButtonClick)
         self.setWindowTitle("Mandelbrot Zoom")
         self.setWindowIcon(QIcon("Icon.jpg"))  # Place an icon and import QIcon
-
 
         # External windows
         self.dialogWindow = DialogWindow()
@@ -40,16 +39,13 @@ class MainWindow(QMainWindow):
         scene.addItem(item)
         self.graphicsView.setScene(scene)
 
-
-
-
         # zoom_faktor
         self.zoom_faktor_einstellen.setValue(1.2)
         self.zoom_faktor_einstellen.setMaximum(4)
         self.zoom_faktor_einstellen.setMinimum(1.2)
         self.zoom_faktor_einstellen.setSingleStep(0.1)
         value_zoom = self.zoom_faktor_einstellen.value()
-        print(value_zoom)
+
 
         # tooltips
         self.zoom_faktor_einstellen.setToolTip('Zoomfaktor einstellen')
@@ -58,9 +54,14 @@ class MainWindow(QMainWindow):
         self.progressBar.setToolTip('Fortschritt der Berechnung')
 
 
-def handleClickYes(self):
+    def handleClickYes(self):
+        self.resetValue = True
+        self.dialogWindow.close()
 
-def
+    def handleClickNo(self):
+        self.resetValue = False
+        self.dialogWindow.close()
+
     def mouseDoubleClickEventMoveEvent(self, event):
         print("hih")
         """global Mouse_X
@@ -70,8 +71,10 @@ def
         print("mouse X,Y: {},{}" .format(Mouse_X, Mouse_Y))"""
 
     def handleButtonClick(self):
-        self.dialogWindow.show()
-        #hoi du
+        self.dialogWindow.exec()
+        if self.resetValue:
+            self.zoom_faktor_einstellen.setValue(1.2)
+            self.resetValue = False
 
 class DialogWindow(QDialog):
     def __init__(self):
