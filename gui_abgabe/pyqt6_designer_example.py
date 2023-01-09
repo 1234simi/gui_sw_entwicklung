@@ -28,7 +28,8 @@ class MainWindow(QMainWindow):
 
         # External windows
         self.dialogWindow = DialogWindow()
-        self.dialogWindow.pushButton.clicked.connect(self.dialogWindow.close)
+        self.dialogWindow.yes_pushButton.clicked.connect(self.handleClickYes)
+        self.dialogWindow.no_pushButton.clicked.connect(self.handleClickNo)
         self.show()
 
         # load the Picture into the Graphicsview
@@ -55,17 +56,19 @@ class MainWindow(QMainWindow):
         self.pushButton.setToolTip('reseet des Zommfaktor')
         self.graphicsView.setToolTip('Bild des Mandelbrot')
         self.progressBar.setToolTip('Fortschritt der Berechnung')
-        #dodododod
 
-    def mouseMoveEvent(self, event):
-        global Mouse_X
+
+def handleClickYes(self):
+
+def
+    def mouseDoubleClickEventMoveEvent(self, event):
+        print("hih")
+        """global Mouse_X
         global Mouse_Y
-        try:
-            Mouse_X = event.x()
-            Mouse_Y = event.y()
-            print("mouse X,Y: {},{}" .format(Mouse_X, Mouse_Y))
-        except:
-            pass
+        Mouse_X = event.x()
+        Mouse_Y = event.y()
+        print("mouse X,Y: {},{}" .format(Mouse_X, Mouse_Y))"""
+
     def handleButtonClick(self):
         self.dialogWindow.show()
         #hoi du

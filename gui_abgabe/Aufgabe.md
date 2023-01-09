@@ -20,7 +20,7 @@ Features (nach Schwierigkeit geordnet)
 - Mandelbrot Menge = Bild
 - Wenn auf einen Punkt im Mandelbrot Bild geklickt wird, wird in diesen Punkt hineingezoomt (mit dem jeweiligen Zoom-Faktor)
 - Reset Knopf, um auf die Anfangs-Mandelbrot-Darstellung zu kommen
-- Zoomfaktor einstellbar [1.2, 4.0], in 0.1er Schritten
+- Zoomfaktor einstellbar [1.2, 4.0], in 0.1er Schritten 
 - Jedes Element bekommt ein `Tooltip` --> Help bez. kleine Erklärung
 - Einträge (In der Menü Leiste oben):
   - File
