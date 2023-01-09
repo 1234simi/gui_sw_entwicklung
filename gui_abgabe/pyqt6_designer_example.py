@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
             pass
     def handleButtonClick(self):
         self.dialogWindow.show()
-        #hoi
+        #hoi du
 
 class DialogWindow(QDialog):
     def __init__(self):
