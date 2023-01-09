@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
         self.pushButton.setToolTip('reseet des Zommfaktor')
         self.graphicsView.setToolTip('Bild des Mandelbrot')
         self.progressBar.setToolTip('Fortschritt der Berechnung')
-
+        #dodododod
 
     def mouseMoveEvent(self, event):
         global Mouse_X
