@@ -55,3 +55,12 @@ Features (nach Schwierigkeit geordnet)
 > https://www.pythonguis.com/tutorials/pyqt-signals-slots-events/
 
 Clicked oder released
+
+
+### Transform coordinates frame to pic
+https://stackoverflow.com/questions/59611751/pyqt5-image-coordinates
+
+> https://stackoverflow.com/questions/63378825/coordinates-of-an-image-pyqt
+
+Python Class in Class
+> https://stackoverflow.com/questions/29560353/python-use-the-output-of-a-class-inside-another-class

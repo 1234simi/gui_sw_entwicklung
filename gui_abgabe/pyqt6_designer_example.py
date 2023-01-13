@@ -4,9 +4,10 @@ from PyQt5 import QtWidgets, uic
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from PyQt5 import QtGui
 
 from Mandelbrot.run_video import main
-
+from gui_abgabe.probiere import GraphicsView
 
 
 class MainWindow(QMainWindow):
@@ -32,12 +33,13 @@ class MainWindow(QMainWindow):
         self.show()
 
         # load the Picture into the Graphicsview
-        self.label = QGraphicsView(self)
-        pix = QPixmap('Icon.jpg')
-        item = QtWidgets.QGraphicsPixmapItem(pix)
-        scene = QtWidgets.QGraphicsScene(self)
-        scene.addItem(item)
-        self.graphicsView.setScene(scene)
+        # self.label = QGraphicsView(self)
+        # self.pix = QPixmap('cat_1.png')
+        # self.item = QtWidgets.QGraphicsPixmapItem(self.pix)
+        # self.scene = QtWidgets.QGraphicsScene(self)
+        # self.scene.addItem(self.item)
+        # self.graphicsView.setScene(self.scene)
+
 
         # zoom_faktor
         self.zoom_faktor_einstellen.setValue(1.2)
@@ -54,20 +56,13 @@ class MainWindow(QMainWindow):
         self.progressBar.setToolTip('Fortschritt der Berechnung')
 
     def mouseDoubleClickEvent(self, event):
+        """
+        Gibt die Koordinaten von dem Mauszeiger zurück, wennn man Doppel-Klickt
+        """
         Mouse_X = event.x()
         Mouse_Y = event.y()
         print(f'coor: {Mouse_X}, {Mouse_Y}')
 
-    # def mouseMoveEvent(self, event):
-    #     pass
-        # global Mouse_X
-        # global Mouse_Y
-        # try:
-        #     Mouse_X = event.x()
-        #     Mouse_Y = event.y()
-        #     print("mouse X,Y: {},{}".format(Mouse_X, Mouse_Y))
-        # except:
-        #     pass
 
     def handleButtonClick(self):
         self.dialogWindow.show()
@@ -86,4 +81,6 @@ class DialogWindow(QDialog):
 
 app = QApplication(sys.argv)
 window = MainWindow()
+w = GraphicsView()
+w.setPixmap(QtGui.QPixmap("cat_1.png"))
 app.exec()
