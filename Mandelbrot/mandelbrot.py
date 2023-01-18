@@ -51,6 +51,9 @@ class MandelbrotPatch:
         complex_center = self._bbox[0] + complex( \
             (d.real * image_center[0]) / self._image.shape[0], \
             (d.imag * image_center[1]) / self._image.shape[1])
+        print(f'complex_center: {complex_center}')
+        print(f'zoom: {zoom}')
+
         self.zoom_complex(complex_center, zoom)
 
 

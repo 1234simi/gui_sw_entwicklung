@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class GraphicsView(QtWidgets.QGraphicsView):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -7,6 +8,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
         self.setScene(scene)
         self._pixmap_item = QtWidgets.QGraphicsPixmapItem()
         scene.addItem(self.pixmap_item)
+
     @property
     def pixmap_item(self):
         return self._pixmap_item

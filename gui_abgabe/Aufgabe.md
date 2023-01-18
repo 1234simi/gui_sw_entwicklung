@@ -64,3 +64,7 @@ https://stackoverflow.com/questions/59611751/pyqt5-image-coordinates
 
 Python Class in Class
 > https://stackoverflow.com/questions/29560353/python-use-the-output-of-a-class-inside-another-class
+
+
+### Erklärung pyqt5
+> https://www.pythonguis.com/tutorials/pyqt-basic-widgets/
