@@ -31,7 +31,7 @@ class MandelbrotPatch:
 
     """
     def __init__(self, bbox, width, height):
-        self._bbox = np.array(bbox, dtype=complex) # TODO: data type with higher precision?
+        self._bbox = np.array(bbox, dtype=complex)
         if self._bbox[0].real > self._bbox[1].real or \
             self._bbox[0].imag > self._bbox[1].imag:
             raise Exception(f'Provide proper bounding box, not {bbox}')

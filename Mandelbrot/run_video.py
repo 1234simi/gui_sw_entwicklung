@@ -12,7 +12,7 @@ def main():
         mbp.calculate_parallel()
         imsave(f'eye{i:04}.png', mbp.get_image())
         # mbp.zoom_complex(eye_of_the_world, 1.1)
-        # ToDo: Zoom und center eingeben
+
         mbp.zoom_complex(eye_of_the_world, 4.0)
 
 

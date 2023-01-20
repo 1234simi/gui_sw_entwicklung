@@ -6,11 +6,30 @@ from PyQt5.QtWidgets import *
 from PIL import Image
 import pathlib
 from matplotlib import pyplot as plt
+import time
+from PIL.PngImagePlugin import PngInfo
+from datetime import datetime
+
+
+def display_timestamp():
+    """
+    Das Format wird geändert. 'timestamp' kommt von der built in Funktion from datetime import datetime
+    Args:
+        timestamp: "2022-11-19 12:18:08.190088"
+
+    Returns: "19. November 2022 12:18:08"
+    """
+    timestamp_now = str(datetime.now())
+    timestamp = datetime.strptime(timestamp_now, "%Y-%m-%d %H:%M:%S.%f")
+    eigenes_format = timestamp.strftime("%d. %B %Y %H:%M:%S")
+    return eigenes_format
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         # Welches Startbild?
+        self.timestamp_now = 'None'
+
         file_name = 'mandelbrot_start_img_800.png'
         # file_name = 'mandelbrot_1_zoom_faktor_1.2.png'
         # file_name = 'cat_1.png'
@@ -73,9 +92,6 @@ class MainWindow(QMainWindow):
         self.value_zoom = self.zoom_faktor_einstellen.value()
         self.value_zoom = round(self.value_zoom, 1)
 
-
-
-
     # """
     # Close the application and check if the image is already saved otherwise show window with opportunity to save
     def closeEvent(self, event):
@@ -87,7 +103,7 @@ class MainWindow(QMainWindow):
                 QMessageBox.Save | QMessageBox.Close | QMessageBox.Cancel,
                 QMessageBox.Save)
             if reply == QMessageBox.Close:
-                app.exit()
+                quit()
 
             if reply == QMessageBox.Save:
                 print("Bild im closeEvent gespeichert")
@@ -103,7 +119,7 @@ class MainWindow(QMainWindow):
                 "Are you sure you want to quit? Any unsaved work will be lost.",
                 QMessageBox.Close | QMessageBox.Cancel)
             if reply == QMessageBox.Close:
-                app.quit()
+                quit()
             else:
                 event.ignore()
             # """
@@ -183,6 +199,7 @@ class MainWindow(QMainWindow):
             # reset flag, weil das aktuelle Bild noch nicht gespeichert ist!
             self.flag_img_saved = False
 
+            # TODO: progress bar!!
             # Das Mandelbrot img wird berechnet
             self.run()
             # Das berechnete Bild wird gespeichert
@@ -262,6 +279,7 @@ class MainWindow(QMainWindow):
         Die Mandelbrot-Berechnung findet hier statt (linspace).
         Am schluss kommt das berechnete Mandelbrot image heraus --> self.calc_mandelbrot_image
         """
+        tic = time.time()
         self.calc_mandelbrot_image = np.zeros((self.image_size, self.image_size, 3))
         real = np.linspace(self.x1, self.x2, self.calc_mandelbrot_image.shape[1])
         imag = np.linspace(self.y1, self.y2, self.calc_mandelbrot_image.shape[0])
@@ -270,6 +288,10 @@ class MainWindow(QMainWindow):
             for row, im in enumerate(imag):
                 n = self.mandelbrot_maxiter(complex(re, im), self.maxiter)
                 self.calc_mandelbrot_image[row, col, :] = self.smooth_color(n, self.maxiter)
+
+        tac = time.time()
+        self.calculation_time = (tac - tic)
+        print(f'took: {self.calculation_time} s')
 
     def save_calculated_image(self):
         """
@@ -284,7 +306,7 @@ class MainWindow(QMainWindow):
         # get the current path
         path = (pathlib.Path(__file__).parent.absolute())
         # Neuer absoluter Pfad inkl file-name wird erstellt
-        self.new_path_to_save_img = path.parent / 'gui_abgabe' / 'img_src' / image_name
+        self.new_path_to_save_img = path.parent / 'gui_abgabe' / 'autosaved_img' / image_name
         # print(f'path: {path}')
         # print(f'abs path: {new_path_to_save_img}')
         print()
@@ -297,6 +319,40 @@ class MainWindow(QMainWindow):
         ax.set_yticks([])
         # Save figure into folder --> 129 dpi = 800x800
         fig.savefig(str(self.new_path_to_save_img), bbox_inches="tight", pad_inches=-1, dpi=200)
+
+
+        tic = time.time()
+        # Save the metadata
+        im1 = Image.open(self.new_path_to_save_img)
+        self.timestamp_now = display_timestamp()
+        try:
+            metadata = PngInfo()
+            metadata.add_text("timestamp", self.timestamp_now)
+            metadata.add_text("image_counter", str(self.image_counter))
+            metadata.add_text("counter_gui_saved", str(self.image_counter_for_gui_saving))
+            metadata.add_text("calculation time [s]", str(self.calculation_time))
+            metadata.add_text("zoom_faktor", str(self.value_zoom))
+            metadata.add_text("Mandelbrot_x_min", str(self.x1))
+            metadata.add_text("Mandelbrot_x_max", str(self.x2))
+            metadata.add_text("Mandelbrot_y_min", str(self.y1))
+            metadata.add_text("Mandelbrot_y_max", str(self.y2))
+
+        except:
+            metadata.add_text("timestamp", self.timestamp_now)
+        # Bild speichern
+        im1.save(self.new_path_to_save_img, pnginfo=metadata)
+        # Get time
+        tac = time.time()
+        factor = (tac - tic)
+        print(f'saving metadata took: {factor} s')
+
+
+
+
+
+
+
+
 
     def saving_img(self):
         """
@@ -334,11 +390,27 @@ class MainWindow(QMainWindow):
 
         # Counter heraufzählen!
         self.image_counter_for_gui_saving += 1
-
         # saving img
+
         im1 = Image.open(abs_path_current_mandelbrot)
-        im1.save(abs_new_path_to_final_folder)
-        print('SAVED!!!')
+        # Save the metadata
+        self.timestamp_now = display_timestamp()
+        try:
+            metadata = PngInfo()
+            metadata.add_text("timestamp", self.timestamp_now)
+            metadata.add_text("image_counter", str(self.image_counter))
+            metadata.add_text("counter_gui_saved", str(self.image_counter_for_gui_saving))
+            metadata.add_text("calculation time [s]", str(self.calculation_time))
+            metadata.add_text("zoom_faktor", str(self.value_zoom))
+            metadata.add_text("Mandelbrot_x_min", str(self.x1))
+            metadata.add_text("Mandelbrot_x_max", str(self.x2))
+            metadata.add_text("Mandelbrot_y_min", str(self.y1))
+            metadata.add_text("Mandelbrot_y_max", str(self.y2))
+        except:
+            metadata.add_text("timestamp", self.timestamp_now)
+
+        # Bild speichern
+        im1.save(abs_new_path_to_final_folder, pnginfo=metadata)
 
         # Set the flag to true, muss bei jeder neuen Berechnung auf False gesetzt werden!!
         self.flag_img_saved = True

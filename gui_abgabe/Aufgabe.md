@@ -68,3 +68,7 @@ Python Class in Class
 
 ### Erklärung pyqt5
 > https://www.pythonguis.com/tutorials/pyqt-basic-widgets/
+
+
+### progress bar
+> https://stackoverflow.com/questions/59082375/implement-qthread-with-qprogressbar-in-pyside-or-pyqt-during-calculation
