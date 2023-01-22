@@ -1,6 +1,8 @@
+import math
 import sys
 import numpy as np
 from PyQt5 import uic
+from PyQt5.QtCore import pyqtSignal, QThread
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PIL import Image
@@ -27,9 +29,9 @@ def display_timestamp():
 
 class MainWindow(QMainWindow):
     def __init__(self):
-        # Welches Startbild?
         self.timestamp_now = 'None'
 
+        # Welches Startbild?
         file_name = 'mandelbrot_start_img_800.png'
         # file_name = 'mandelbrot_1_zoom_faktor_1.2.png'
         # file_name = 'cat_1.png'
@@ -40,10 +42,12 @@ class MainWindow(QMainWindow):
         # Mit progress-bar
         uic.loadUi("gui_data_progress_bar_qlabel.ui", self)
         self.setMouseTracking(True)
+        # Progress-Bar wird auf 0% gesetzt
+        self.progressBar.setValue(0)
 
         # get the img into the label
-        path_to_img_src_folder = (pathlib.Path(__file__).parent.absolute()) / 'img_src'
-        self.abs_filepath_start_img = path_to_img_src_folder / file_name
+        self.path_to_img_src_folder = (pathlib.Path(__file__).parent.absolute()) / 'img_src'
+        self.abs_filepath_start_img = self.path_to_img_src_folder / file_name
         print(f'abs file path start-image: \n{self.abs_filepath_start_img}')
 
         # Das Startbild wird in das GUI geladen
@@ -87,12 +91,19 @@ class MainWindow(QMainWindow):
         self.actionSave_as_png.triggered.connect(self.saving_img)
         self.actionquit.triggered.connect(self.close)
 
+    def all_progress_bar(self, progress: int):
+        """
+        Hier wird der 'progress-Wert' in die Progress-Bar geladen
+        :param progress: int (wird in der Mandelbrot berechnung berechnet)
+        """
+        # creating progress bar
+        self.progressBar.setValue(progress)
+
     def update_zoom_var(self):
         # global zoom_faktor
         self.value_zoom = self.zoom_faktor_einstellen.value()
         self.value_zoom = round(self.value_zoom, 1)
 
-    # """
     # Close the application and check if the image is already saved otherwise show window with opportunity to save
     def closeEvent(self, event):
         if not self.flag_img_saved:  # when image isn't saved
@@ -142,6 +153,9 @@ class MainWindow(QMainWindow):
             self.resetValue = False
 
     def load_img_into_label(self):
+        """
+        Das Bild wird in das Gui label geladen und auch die Grösse ausgegeben.
+        """
         global img_original_width, img_original_height
         # Originalgrösse vom Bild speichern
         with Image.open(self.abs_filepath_start_img) as img:
@@ -160,7 +174,7 @@ class MainWindow(QMainWindow):
 
     def mouseDoubleClickEvent(self, event):
         """
-        Gibt die Koordinaten von dem Mauszeiger zurück, wennn man Doppel-Klickt
+        Gibt die Koordinaten von dem Mauszeiger zurück, wenn man Doppel-Klickt
         """
         # Grössse vom Bild
         img_abs_size = self.label.size()
@@ -199,19 +213,21 @@ class MainWindow(QMainWindow):
             # reset flag, weil das aktuelle Bild noch nicht gespeichert ist!
             self.flag_img_saved = False
 
-            # TODO: progress bar!!
             # Das Mandelbrot img wird berechnet
             self.run()
+
             # Das berechnete Bild wird gespeichert
             self.save_calculated_image()
+            # Progress-bar auf 0 setzen
+            self.progressBar.reset()
+            self.progressBar.setValue(0)
             print('fertig')
-
             # Update the mandelbrot img im GUI
             self.load_new_mandelbrot_img()
             print(f'Aktueller Bild-Counter --> {self.image_counter}')
 
         else:
-            print('Nicht im Bild!')
+            self.get_kitten()
 
     def load_new_mandelbrot_img(self):
         """
@@ -219,6 +235,7 @@ class MainWindow(QMainWindow):
         """
         # loading image
         self.label.setPixmap(QPixmap(str(self.new_path_to_save_img)))
+        print(f'filepath im load_new..: {str(self.new_path_to_save_img)}')
         # Offset y = 38 px
         # Offset x = 0 px
         self.label.setScaledContents(True)
@@ -278,6 +295,8 @@ class MainWindow(QMainWindow):
         """
         Die Mandelbrot-Berechnung findet hier statt (linspace).
         Am schluss kommt das berechnete Mandelbrot image heraus --> self.calc_mandelbrot_image
+
+        Der Fortschritt wird hier berechnet und gerade in den Progress-Bar gefüttert. Die benötigte Zeit wird ausgegeben
         """
         tic = time.time()
         self.calc_mandelbrot_image = np.zeros((self.image_size, self.image_size, 3))
@@ -285,9 +304,15 @@ class MainWindow(QMainWindow):
         imag = np.linspace(self.y1, self.y2, self.calc_mandelbrot_image.shape[0])
 
         for col, re in enumerate(real):
+
             for row, im in enumerate(imag):
                 n = self.mandelbrot_maxiter(complex(re, im), self.maxiter)
                 self.calc_mandelbrot_image[row, col, :] = self.smooth_color(n, self.maxiter)
+
+            # calculate progress in % and set it to the progress-bar
+            progress_prozent = (math.ceil(col / self.image_size * 100))
+            self.all_progress_bar(progress_prozent)
+            # print(progress_)
 
         tac = time.time()
         self.calculation_time = (tac - tic)
@@ -296,7 +321,8 @@ class MainWindow(QMainWindow):
     def save_calculated_image(self):
         """
         Das berechnete neue Mandelbrot Bild wird mit Hilfe der Matplotlib dargestellt.
-        Mit Savefig() wird das Bild auch gespeichert, im 'img_src' Ordner
+        Mit Savefig() wird das Bild auch gespeichert, im 'img_src' Ordner.
+        Die Bild Metadaten werden auch noch gespeichert, diese können mit der seperaten Funktion ausgegeben werden
         """
         # Create Path to save img
         self.image_counter += 1
@@ -320,10 +346,11 @@ class MainWindow(QMainWindow):
         # Save figure into folder --> 129 dpi = 800x800
         fig.savefig(str(self.new_path_to_save_img), bbox_inches="tight", pad_inches=-1, dpi=200)
 
-
         tic = time.time()
         # Save the metadata
         im1 = Image.open(self.new_path_to_save_img)
+        self.img_seize_new = im1.size
+        print(f'\tseize new img: {self.img_seize_new}')
         self.timestamp_now = display_timestamp()
         try:
             metadata = PngInfo()
@@ -338,6 +365,7 @@ class MainWindow(QMainWindow):
             metadata.add_text("Mandelbrot_y_max", str(self.y2))
 
         except:
+            metadata = PngInfo()
             metadata.add_text("timestamp", self.timestamp_now)
         # Bild speichern
         im1.save(self.new_path_to_save_img, pnginfo=metadata)
@@ -346,19 +374,70 @@ class MainWindow(QMainWindow):
         factor = (tac - tic)
         print(f'saving metadata took: {factor} s')
 
+    def get_kitten(self):
+        """
+        hihi
+        """
+        # Der Mauszeiger Klick war nicht im 'Label' bez. img
+        self.flag_kitten = False
+        print('Nicht im Bild!')
+        if self.image_counter < 1:
+            file_name = 'kitten_2.png'
+            self.filepath_to_cat = self.path_to_img_src_folder / file_name
+            self.load_kitten()
+            self.flag_kitten = True
+        elif self.image_counter >= 1:
+            result = self.image_counter % 2
+            if result == 0:  # Gerade Zahl
+                file_name = 'kitten_3.png'
+            if result == 1:
+                file_name = 'kitten.png'
 
+            self.filepath_to_cat = self.path_to_img_src_folder / file_name
+            im2 = Image.open(self.filepath_to_cat)
+            im2 = im2.resize(self.img_seize_new)
+            im2.save(self.filepath_to_cat)
+            self.load_kitten()
+            self.flag_kitten = True
 
+        if self.flag_kitten and self.image_counter >= 1:
+            for i in range(101):
+                # calculate progress in % and set it to the progress-bar
+                progress_prozent = i
+                self.all_progress_bar(i)
+                # print(progress_)
+                time.sleep(0.01)
+            # Load prev. img
+            self.load_new_mandelbrot_img()
+            self.progressBar.reset()
+            self.progressBar.setValue(0)
 
+        if self.flag_kitten and self.image_counter < 1:
+            for i in range(101):
+                # calculate progress in % and set it to the progress-bar
+                progress_prozent = i
+                self.all_progress_bar(i)
+                # print(progress_)
+                time.sleep(0.01)
+            # Load Start img
+            self.load_img_into_label()
+            self.progressBar.reset()
+            self.progressBar.setValue(0)
 
-
-
-
+    def load_kitten(self):
+        # loading image
+        self.label.setPixmap(QPixmap(str(self.filepath_to_cat)))
+        print(f'filepathe: {str(self.filepath_to_cat)}')
+        self.label.setScaledContents(True)
+        self.update()
+        self.show()
 
     def saving_img(self):
         """
         Bild speichern, wenn im Gui ausgewählt wird.
         Dazu wird ein eigener Ordner erstellt 'saved_images_by_gui'
         """
+        # global metadata
         image_name_to_save = ' '
         abs_path_current_mandelbrot = ' '
 
@@ -407,6 +486,7 @@ class MainWindow(QMainWindow):
             metadata.add_text("Mandelbrot_y_min", str(self.y1))
             metadata.add_text("Mandelbrot_y_max", str(self.y2))
         except:
+            metadata = PngInfo()
             metadata.add_text("timestamp", self.timestamp_now)
 
         # Bild speichern
@@ -419,6 +499,7 @@ class MainWindow(QMainWindow):
 class DialogWindow(QDialog):
     def __init__(self):
         super().__init__()
+        self.yes_pushButton = None
         uic.loadUi("dialog.ui", self)
         self.setWindowIcon(QIcon("Icon.jpg"))  # Place an icon and import QIcon
         # uic.loadUi("gui_data.ui", self)
