@@ -17,6 +17,7 @@ def get_metadata(abs_file_path):
 if __name__ == '__main__':
     # Absoluter Pfad vom Hauptverzeichnis
     pfad_input = (pathlib.Path(__file__).parent.absolute())
+    print()
     print(f'path: {pfad_input}')
 
     for root, folders, file in os.walk(pfad_input):
@@ -24,7 +25,7 @@ if __name__ == '__main__':
         for folder in folders:
             if folder == 'autosaved_img' or folder == 'saved_images_by_gui':
                 print()
-                print(f'folder: {folder} :')
+                print(f'folder --> {folder}:')
                 print()
                 for entry in os.listdir(folder):
                     # print(f'\tentry: {entry}')

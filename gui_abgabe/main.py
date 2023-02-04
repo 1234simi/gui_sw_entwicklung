@@ -33,8 +33,7 @@ class MainWindow(QMainWindow):
 
         # Welches Startbild?
         file_name = 'mandelbrot_start_img_800.png'
-        # file_name = 'mandelbrot_1_zoom_faktor_1.2.png'
-        # file_name = 'cat_1.png'
+
 
         super().__init__()
         # creating label for filling the img in it
@@ -107,7 +106,7 @@ class MainWindow(QMainWindow):
     # Close the application and check if the image is already saved otherwise show window with opportunity to save
     def closeEvent(self, event):
         if not self.flag_img_saved:  # when image isn't saved
-            print('ich muss noch speichern')
+            # print('ich muss noch speichern')
             reply = QMessageBox.question(
                 self, "Message",
                 "Are you sure you want to quit? Any unsaved work will be lost.",
@@ -124,7 +123,7 @@ class MainWindow(QMainWindow):
                 print('event ignore')
 
         else:  # when image is saved
-            print("ich habe schon gespeichert")
+            # print("ich habe schon gespeichert")
             reply = QMessageBox.question(
                 self, "Message",
                 "Are you sure you want to quit? Any unsaved work will be lost.",
@@ -221,7 +220,7 @@ class MainWindow(QMainWindow):
             # Progress-bar auf 0 setzen
             self.progressBar.reset()
             self.progressBar.setValue(0)
-            print('fertig')
+
             # Update the mandelbrot img im GUI
             self.load_new_mandelbrot_img()
             print(f'Aktueller Bild-Counter --> {self.image_counter}')
@@ -394,6 +393,7 @@ class MainWindow(QMainWindow):
                 file_name = 'kitten.png'
 
             self.filepath_to_cat = self.path_to_img_src_folder / file_name
+            print(f'self.filepath_to_cat')
             im2 = Image.open(self.filepath_to_cat)
             im2 = im2.resize(self.img_seize_new)
             im2.save(self.filepath_to_cat)
@@ -502,8 +502,7 @@ class DialogWindow(QDialog):
         self.yes_pushButton = None
         uic.loadUi("dialog.ui", self)
         self.setWindowIcon(QIcon("Icon.jpg"))  # Place an icon and import QIcon
-        # uic.loadUi("gui_data.ui", self)
-        # self.pushButton.clicked.connect(self.close)
+
 
 
 if __name__ == "__main__":
