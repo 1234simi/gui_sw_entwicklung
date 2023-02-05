@@ -70,6 +70,9 @@ filename: mandelbrot_1_zoom_faktor_1.2.png
   - Die jeweiligen Koordinaten für die Mandelbrot Berechnung 
 
 
+## Find the kitten :-)
+
+
 
 
 
